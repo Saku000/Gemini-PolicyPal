@@ -12,7 +12,7 @@ import numpy as np
 from scipy.spatial.distance import cosine
 from typing import Dict, Any
 import pdfplumber
-
+import re
 import streamlit as st
 import plotly.graph_objects as go
 from dotenv import load_dotenv
@@ -112,17 +112,49 @@ def build_qa_index_from_folder(folder_path: str):
         raise ValueError("No text extracted.")
 
 def query_rag(question: str):
-    if not QA_VECTOR_STORE_PATH.exists(): return "Index not found.", []
-    with open(QA_VECTOR_STORE_PATH, "r", encoding="utf-8") as f: store = json.load(f)
+    if not QA_VECTOR_STORE_PATH.exists():
+        return "Index not found.", []
+
+    with open(QA_VECTOR_STORE_PATH, "r", encoding="utf-8") as f:
+        store = json.load(f)
+
     q_emb = core.embed_texts_openai([question], api_key=API_KEY)[0]
     dists = [float(cosine(q_emb, emb)) for emb in store["embeddings"]]
     idx = np.argsort(dists)[:3]
-    retrieval = {"ids": [[store["ids"][i] for i in idx]], "documents": [[store["documents"][i] for i in idx]], "metadatas": [[store["metadatas"][i] for i in idx]], "distances": [[dists[i] for i in idx]]}
+
+    retrieval = {
+        "ids": [[store["ids"][i] for i in idx]],
+        "documents": [[store["documents"][i] for i in idx]],
+        "metadatas": [[store["metadatas"][i] for i in idx]],
+        "distances": [[dists[i] for i in idx]]
+    }
+
     context_text, sources, _ = core._build_context_from_retrieval(retrieval)
+
     from google.genai import types
     client = core._openai_client(API_KEY)
-    resp = client.models.generate_content(model=core.CHAT_MODEL, contents=f"Question: {question}\n\nContext: {context_text}", config=types.GenerateContentConfig(system_instruction="Use context only. Keep it conversational.", temperature=0.2))
-    return getattr(resp, "text", "").strip(), sources
+
+    resp = client.models.generate_content(
+        model=core.CHAT_MODEL,
+        contents=f"Question: {question}\n\nContext: {context_text}",
+        config=types.GenerateContentConfig(
+            system_instruction="""
+Use the context only.
+Answer naturally and conversationally.
+Do not mention sources, citations, document labels, or phrases like
+'Source 1', 'Source 2', 'according to the document', or 'the policy states'.
+Do not quote source numbers in the answer.
+""",
+            temperature=0.2
+        )
+    )
+
+    answer = getattr(resp, "text", "").strip()
+    answer = re.sub(r"\(Source\s*\d+\)", "", answer, flags=re.IGNORECASE)
+    answer = re.sub(r"Source\s*\d+", "", answer, flags=re.IGNORECASE)
+
+    return answer.strip(), sources
+
 
 # ── 4. VISUAL COMPONENTS ──────────────────────────────────────────────────────
 def pal_svg(size=44, state="default"):
@@ -287,9 +319,6 @@ def page_ask():
             with c1:
                 content = msg["content"]
                 sources_html = ""
-                if "sources" in msg and msg["sources"]:
-                    pages = [str(s.get("page_start", "?")) for s in msg["sources"]]
-                    sources_html = f'<div class="cite-pill">{sparkle()} Sources: Pages {", ".join(pages)}</div>'
                 st.markdown(f'<div style="display:flex;gap:12px;margin-bottom:14px">{pal_svg(44)}<div class="bubble-pal">{content}{sources_html}</div></div>', unsafe_allow_html=True)
 
     # ── 3. ASYNC LOADING LOGIC ──
