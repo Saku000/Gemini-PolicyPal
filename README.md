@@ -22,6 +22,7 @@ PolicyPal/
 ├── app.py                     # Streamlit web interface for policy Q&A
 ├── core.py                    # Core RAG reasoning engine
 │
+├── auto_analysis.py           # Automatic analysis pipeline for policy documents
 ├── compare_policies.py        # Compare coverage between two insurance policies
 ├── prod_compare.py            # Production-level policy comparison logic
 │
@@ -30,6 +31,9 @@ PolicyPal/
 │
 ├── config.py                  # Global configuration (paths, model settings)
 ├── policy_paths.py            # Policy file path utilities
+├── ui_adapter.py              # UI helper utilities for Streamlit interface
+│
+├── styles.css                 # Custom CSS styling for Streamlit UI
 │
 ├── requirements.txt           # Python dependencies
 ├── setup.bat                  # Create virtual environment & install dependencies
@@ -45,6 +49,9 @@ PolicyPal/
     ├── compare_prod/
     ├── qa_parsed_chunks.json
     └── qa_vector_store.json
+ 
+
+
 ```
 
 
