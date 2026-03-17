@@ -397,12 +397,6 @@ def compare_policies_prod(
     api_key: Optional[str],
     force_refresh_summaries: bool = False,
 ) -> str:
-    """
-    Production compare:
-    1) Build/load cached structured summaries for A and B
-    2) Compare summaries and enforce Missing values in table (including placeholders)
-    3) Output in stable UI-friendly format (Comparison Result + fixed-width table)
-    """
     sum_a = build_policy_summary(policy_a_name, policy_a_store, api_key=api_key, force=force_refresh_summaries)
     sum_b = build_policy_summary(policy_b_name, policy_b_store, api_key=api_key, force=force_refresh_summaries)
 
@@ -437,7 +431,23 @@ def compare_policies_prod(
         "9) Return the HTML table exactly as provided.\n"
     )
 
+    output_format_template = f"""
+## Comparison Result
 
+{{DIRECT_ANSWER_ONE_PARAGRAPH}}
+
+### Here is a comparison of the available information:
+{table_html}
+
+## Key Differences
+- {{DIFF_1}}
+- {{DIFF_2}}
+- {{DIFF_3}}
+
+## Missing Info Checklist
+- {policy_a_name}: {{MISSING_A}}
+- {policy_b_name}: {{MISSING_B}}
+""".strip()
 
     user_obj = {
         "task": "compare_two_policies",
@@ -464,7 +474,6 @@ def compare_policies_prod(
         temperature=0.2,
     )
 
-    # Hard guarantee: if model didn't follow template, fall back to a safe deterministic render.
     if "## Comparison Result" not in text or "### Here is a comparison of the available information:" not in text:
         missing_a_str = ", ".join(missing_a) if missing_a else "None"
         missing_b_str = ", ".join(missing_b) if missing_b else "None"
@@ -478,13 +487,6 @@ def compare_policies_prod(
             "- Differences cannot be fully determined because key fields are Missing.\n"
             "- Provide Declarations/Coverages pages to confirm actual limits, deductibles, and premium.\n"
             "- Exclusions and claim conditions may still differ; confirm with complete policy wording.\n\n"
-            f"## Who Should Choose {policy_a_name} vs {policy_b_name}\n"
-            f"**Choose {policy_a_name} if:**\n"
-            "- You can confirm its missing fields from the Declarations and they better match your needs.\n"
-            "- Its exclusions/conditions are more favorable for your situation.\n\n"
-            f"**Choose {policy_b_name} if:**\n"
-            "- You can confirm its missing fields from the Declarations and they better match your needs.\n"
-            "- Its exclusions/conditions are more favorable for your situation.\n\n"
             "## Missing Info Checklist\n"
             f"- {policy_a_name}: Missing fields: {missing_a_str}\n"
             f"- {policy_b_name}: Missing fields: {missing_b_str}\n"

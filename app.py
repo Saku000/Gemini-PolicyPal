@@ -261,11 +261,11 @@ def page_dashboard():
 
             c1, c2 = st.columns(2)
             with c1:
-                if st.button("📂 Open QA Folder", use_container_width=True): open_folder(QA_PDF_DIR)
+                if st.button("Open QA Folder", use_container_width=True): open_folder(QA_PDF_DIR)
 
             start_analysis = False
             with c2:
-                if st.button("✨ Analyze & Index", type="primary", use_container_width=True):
+                if st.button("Analyze & Index", type="primary", use_container_width=True):
                     start_analysis = True
 
             # 加载动画包裹在居中列内，确保它在按钮正下方居中出现
@@ -301,7 +301,7 @@ def page_dashboard():
 
     # Summary Row
     st.markdown(f'''<div class="summary-card">
-      <div class="sum-header"><div><h3>Plain English Summary</h3></div></div>
+      <div class="sum-header"><div><h3>Summary</h3></div></div>
       <div class="sum-text">{an.get("plain_summary","")}</div>
       <div class="ideal-for"> <strong>Ideal for:</strong> {an.get("who_its_good_for","")}</div>
     </div>''', unsafe_allow_html=True)
@@ -410,7 +410,7 @@ def page_ask():
     head_col, btn_col = st.columns([3, 1])
     with head_col: st.markdown('<div class="hero-h" style="font-size:2.5rem; margin-bottom:1rem;">Ask <span class="hero-grad">Pal</span></div>', unsafe_allow_html=True)
     with btn_col:
-        if st.button("📂 Open QA Folder", use_container_width=True): open_folder(QA_PDF_DIR)
+        if st.button("Open QA Folder", use_container_width=True): open_folder(QA_PDF_DIR)
 
     if not st.session_state.policy_text:
         st.info("Please index your documents in the Dashboard first.")

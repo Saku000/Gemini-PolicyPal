@@ -1,6 +1,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body,[data-testid="stAppViewContainer"]{
-  background:linear-gradient(145deg,#1A0F3C 0%,#2D1B69 35%,#11295E 70%,#0C3B6E 100%) !important;
+  /* 替换为图片中的深海军蓝到青色渐变 */
+  background: linear-gradient(135deg, #0B1521 0%, #1C4B62 80%, #307E92 100%) !important;
   background-attachment:fixed !important;
   font-family:'Plus Jakarta Sans',sans-serif !important;
   color:#EEE8FF !important;
