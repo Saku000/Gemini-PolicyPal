@@ -16,6 +16,7 @@ import re
 import streamlit as st
 import plotly.graph_objects as go
 from dotenv import load_dotenv
+import base64  # 新增 base64 用于图片编码
 
 # ── 1. SETUP & CSS ────────────────────────────────────────────────────────────
 load_dotenv()
@@ -31,14 +32,34 @@ try:
     css_path = current_dir / "styles.css"
     _css = css_path.read_text(encoding="utf-8")
 
-    # 强制修正对话框边框对齐和间距
+    # 强制修正对话框边框对齐和间距，彻底解决滑动冲突
     ui_fixes = """
-    [data-testid="stChatInput"] { 
-        margin-bottom: 2.5rem !important;
-        border-radius: 20px !important;
-    }
-    .stMainBlockContainer { padding-bottom: 5rem !important; }
-    """
+        /* 1. 直接垫高 Streamlit 的底层固定容器，而不是用 transform 产生视觉偏差 */
+        [data-testid="stBottom"] {
+            padding-bottom: 2.5rem !important; 
+            background: transparent !important;
+        }
+        [data-testid="stBottom"] > div {
+            background: transparent !important;
+        }
+
+        /* 2. 控制输入框本身的圆角、宽度和居中 */
+        [data-testid="stChatInput"] { 
+            border-radius: 50px !important;
+            max-width: 850px !important;
+            margin: 0 auto !important;
+        }
+
+        /* 3. 给主页面底部留出足够的物理空白，防止内容被输入框挡住 */
+        .stMainBlockContainer { 
+            padding-bottom: 150px !important; 
+        }
+
+        /* 4. 禁用浏览器的滚动锚定特性，切断回弹 Bug */
+        * {
+            overflow-anchor: none !important;
+        }
+        """
     _fonts = '<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">'
     st.markdown(_fonts, unsafe_allow_html=True)
     st.markdown(f"<style>{_css}\n{ui_fixes}</style>", unsafe_allow_html=True)
@@ -159,6 +180,17 @@ Do not quote source numbers in the answer.
 
 # ── 4. VISUAL COMPONENTS ──────────────────────────────────────────────────────
 def pal_svg(size=44, state="default"):
+    # 尝试读取本地 logo.png，如果存在就返回图片，不存在则回退显示原版 SVG 盾牌
+    img_path = "logo.png"
+    if os.path.exists(img_path):
+        try:
+            with open(img_path, "rb") as image_file:
+                encoded_string = base64.b64encode(image_file.read()).decode()
+            return f'<img src="data:image/png;base64,{encoded_string}" width="{size}" height="{size}" style="object-fit: contain;">'
+        except Exception:
+            pass # 如果读取失败则忽略，继续往下执行原版 SVG 代码
+
+    # 原版 SVG 盾牌 (Fallback)
     s = size; h = int(s * 1.2)
     grad = f'<linearGradient id="pg{s}{state}" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#4F46E5"/><stop offset="100%" stop-color="#7C3AED"/></linearGradient>'
     shield = f'<path d="M{s*.5} {s*.04} C{s*.5} {s*.04} {s*.94} {s*.15} {s*.97} {s*.22} L{s*.97} {s*.5} C{s*.97} {s*.78} {s*.5} {s*1.15} {s*.5} {s*1.15} C{s*.5} {s*1.15} {s*.03} {s*.78} {s*.03} {s*.5} L{s*.03} {s*.22} C{s*.06} {s*.15} {s*.5} {s*.04} {s*.5} {s*.04}Z" fill="url(#pg{s}{state})"/>'
@@ -185,17 +217,17 @@ def render_nav():
         st.empty()  # 留空占位
 
     with c1:
-        if st.button("📊  Dashboard", key="n1", use_container_width=True,
+        if st.button("Dashboard", key="n1", use_container_width=True,
                      type="primary" if st.session_state.page == "dashboard" else "secondary"):
             st.session_state.page = "dashboard";
             st.rerun()
     with c2:
-        if st.button("⚖️  Compare", key="n2", use_container_width=True,
+        if st.button("Compare", key="n2", use_container_width=True,
                      type="primary" if st.session_state.page == "compare" else "secondary"):
             st.session_state.page = "compare";
             st.rerun()
     with c3:
-        if st.button("💬  Ask Pal", key="n3", use_container_width=True,
+        if st.button("Ask Pal", key="n3", use_container_width=True,
                      type="primary" if st.session_state.page == "ask" else "secondary"):
             st.session_state.page = "ask";
             st.rerun()
@@ -207,37 +239,57 @@ def page_dashboard():
     st.markdown('<div class="pp-page"><div class="orb-tr"></div><div class="orb-bl"></div>', unsafe_allow_html=True)
 
     if an is None:
-        st.markdown(f'''<div class="hero-wrap"><div class="hero-h">Your insurance,<br><span class="hero-grad">simplified.</span></div></div>''', unsafe_allow_html=True)
-        uc, _ = st.columns([2, 1])
-        with uc:
-            st.markdown(f'''<div class="upload-zone-wrapper"><div class="upload-zone-inner"><div>{pal_svg(64)}</div><div class="upload-card-text"><h3>Analyze Policy Folder</h3><p>Reads from <code>data/qa_policies</code></p></div></div></div>''', unsafe_allow_html=True)
+        st.markdown(
+            f'''<div class="hero-wrap"><div class="hero-h">Your insurance,<br><span class="hero-grad">simplified.</span></div></div>''',
+            unsafe_allow_html=True)
+
+        # 1. 使用 [1, 2.5, 1] 的列比例，利用左右的空白列把主体区域精准挤到屏幕正中央
+        _, center_col, _ = st.columns([1, 2.5, 1])
+
+        with center_col:
+            # 2. 改用 flex-direction: column 让图标和文字上下居中对齐
+            st.markdown(f'''
+                <div class="upload-zone-wrapper">
+                    <div class="upload-zone-inner" style="flex-direction: column; justify-content: center; text-align: center; gap: 0.8rem; padding: 2.5rem 2rem;">
+                        <div>{pal_svg(64)}</div>
+                        <div class="upload-card-text">
+                            <h3 style="margin-bottom: 0.4rem;">Analyze Policy Folder</h3>
+                            <p>Reads from <code>data/qa_policies</code></p>
+                        </div>
+                    </div>
+                </div>''', unsafe_allow_html=True)
+
             c1, c2 = st.columns(2)
             with c1:
                 if st.button("📂 Open QA Folder", use_container_width=True): open_folder(QA_PDF_DIR)
+
+            start_analysis = False
             with c2:
                 if st.button("✨ Analyze & Index", type="primary", use_container_width=True):
-                    with st.spinner("Extracting & Indexing..."):
-                        text = extract_text_from_folder(str(QA_PDF_DIR))
-                        if text:
-                            st.session_state.policy_text = text
-                            st.session_state.analysis = analyze_policy_document(text, API_KEY)
-                            build_qa_index_from_folder(str(QA_PDF_DIR))
-                            st.rerun()
+                    start_analysis = True
+
+            # 加载动画包裹在居中列内，确保它在按钮正下方居中出现
+            if start_analysis:
+                with st.spinner("Extracting & Indexing..."):
+                    text = extract_text_from_folder(str(QA_PDF_DIR))
+                    if text:
+                        st.session_state.policy_text = text
+                        st.session_state.analysis = analyze_policy_document(text, API_KEY)
+                        build_qa_index_from_folder(str(QA_PDF_DIR))
+                        st.rerun()
+
         st.markdown("</div>", unsafe_allow_html=True)
         return
 
     # Banner with Action Controls
     st.markdown(f'''<div class="policy-banner">
-      <div class="banner-gradient-bar"></div>
-      {pal_svg(52)}
-      <div style="flex-grow:1">
-        <div class="policy-name">{an.get("insurer", "Your Policy")}</div>
-        <div class="policy-meta">Indexed from folder &nbsp;·&nbsp; <span class="active">Active</span></div>
-      </div>
-      <div style="display:flex; gap:10px;">
-        <button onclick="window.location.reload()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(167,139,250,0.3); color:white; border-radius:12px; padding:10px 20px; cursor:pointer; font-weight:600;">🔄 Re-run Analysis</button>
-      </div>
-    </div>''', unsafe_allow_html=True)
+          <div class="banner-gradient-bar"></div>
+          {pal_svg(52)}
+          <div style="flex-grow:1">
+            <div class="policy-name">{an.get("insurer", "Your Policy")}</div>
+            <div class="policy-meta">Indexed from folder &nbsp;·&nbsp; <span class="active">Active</span></div>
+          </div>
+        </div>''', unsafe_allow_html=True)
 
     c1, c2, c3, c4 = st.columns(4)
     with c1: st.markdown(f'<div class="stat-card sc-1"><div class="stat-label">Deductible</div><div class="stat-value">{an.get("deductible","—")}</div></div>', unsafe_allow_html=True)
@@ -251,7 +303,7 @@ def page_dashboard():
     st.markdown(f'''<div class="summary-card">
       <div class="sum-header"><div><h3>Plain English Summary</h3></div></div>
       <div class="sum-text">{an.get("plain_summary","")}</div>
-      <div class="ideal-for">💡 <strong>Ideal for:</strong> {an.get("who_its_good_for","")}</div>
+      <div class="ideal-for"> <strong>Ideal for:</strong> {an.get("who_its_good_for","")}</div>
     </div>''', unsafe_allow_html=True)
 
     st.markdown('<div class="gap-lg"></div>', unsafe_allow_html=True)
@@ -263,7 +315,7 @@ def page_dashboard():
     st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown('<div class="gap-lg"></div>', unsafe_allow_html=True)
-    if st.button("🗑️ Reset and Analyze New Policy Content", use_container_width=True):
+    if st.button("Reset and Analyze New Policy Content", use_container_width=True):
         st.session_state.analysis = None
         st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
@@ -288,16 +340,15 @@ def page_compare():
 
         # 左侧标题栏
         st.markdown('''
-            <div style="display:flex; align-items:center; gap:10px; font-weight:700; color:#EEE8FF; margin-bottom:1.5rem;">
-                <div style="background:#7C3AED; border-radius:8px; width:28px; height:28px; display:flex; align-items:center; justify-content:center; font-size:14px;">📁</div>
-                Policy Folders
-            </div>
-        ''', unsafe_allow_html=True)
+                    <div style="font-weight:700; color:#EEE8FF; margin-bottom:1.5rem; font-size:1.05rem;">
+                         Policy Folders
+                    </div>
+                ''', unsafe_allow_html=True)
 
         # Policy A 垂直组
         st.markdown('<div style="font-size:0.85rem; font-weight:600; color:#EEE8FF; margin-bottom:8px;">Policy A</div>',
                     unsafe_allow_html=True)
-        if st.button("📂 Open Folder A", key="op_a", use_container_width=True): open_folder(POLICY_A_DIR)
+        if st.button("Open Folder A", key="op_a", use_container_width=True): open_folder(POLICY_A_DIR)
         na = st.text_input("Label A", value=st.session_state.cmp_name_a, label_visibility="collapsed")
 
         st.markdown('<div class="gap-md"></div>', unsafe_allow_html=True)
@@ -305,13 +356,13 @@ def page_compare():
         # Policy B 垂直组
         st.markdown('<div style="font-size:0.85rem; font-weight:600; color:#EEE8FF; margin-bottom:8px;">Policy B</div>',
                     unsafe_allow_html=True)
-        if st.button("📂 Open Folder B", key="op_b", use_container_width=True): open_folder(POLICY_B_DIR)
+        if st.button("Open Folder B", key="op_b", use_container_width=True): open_folder(POLICY_B_DIR)
         nb = st.text_input("Label B", value=st.session_state.cmp_name_b, label_visibility="collapsed")
 
         st.markdown('<div class="gap-lg"></div>', unsafe_allow_html=True)
 
         # 运行按钮
-        if st.button("✨ Run Comparison", type="primary", use_container_width=True):
+        if st.button("Run Comparison", type="primary", use_container_width=True):
             with st.spinner("Analyzing..."):
                 idx_a = build_policy_index(str(POLICY_A_DIR), na, API_KEY, str(COMPARE_DIR))
                 idx_b = build_policy_index(str(POLICY_B_DIR), nb, API_KEY, str(COMPARE_DIR))

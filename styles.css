@@ -584,3 +584,69 @@ div[data-testid="stVerticalBlock"] > div:first-child{
     color: #7B6FA0;
     z-index: 1;
 }
+/* ── CHAT INPUT INNER FIX ── */
+div[data-testid="stChatInput"] > div {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 50px !important;
+}
+div[data-testid="stChatInput"] > div:focus-within {
+    box-shadow: none !important;
+}
+
+/* ── REMOVE BOTTOM SOLID BACKGROUND (Chat Input Area) ── */
+[data-testid="stBottom"],
+[data-testid="stBottom"] > div {
+    background: transparent !important;
+}
+/* ── 终极杀手锏：彻底清除输入框内部所有嵌套层级的原生底色 ── */
+div[data-testid="stChatInput"] * {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* 确保最外层胶囊本身保留我们想要的半透明毛玻璃质感，避免被上面的规则误伤 */
+div[data-testid="stChatInput"] {
+    background: rgba(255, 255, 255, 0.07) !important;
+    border: 2px solid rgba(167, 139, 250, 0.3) !important;
+    border-radius: 50px !important;
+    box-shadow: 0 10px 40px rgba(99, 102, 241, 0.2) !important;
+}
+
+/* 发送按钮悬浮特效 */
+div[data-testid="stChatInput"] button:hover svg {
+    fill: #A78BFA !important;
+}
+
+/* ── 完美的 Q&A 胶囊输入框（修复太扁和内容不居中的问题） ── */
+div[data-testid="stChatInput"] {
+    padding: 10px 20px !important; /* 调整第一个数字(10px)可以控制整体的高低 */
+}
+
+/* 清除 Streamlit 内部多余的撑开空间 */
+div[data-testid="stChatInput"] > div {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* 保证文字和光标的高度正常，且完美居中 */
+div[data-testid="stChatInput"] textarea {
+    min-height: 24px !important;
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
+    line-height: 1.5 !important;
+}
+
+/* 确保右侧发送箭头垂直居中 */
+div[data-testid="stChatInput"] button {
+    padding-bottom: 0 !important;
+    padding-top: 0 !important;
+}
+/* ── 缩短 Q&A 底部输入框的左右长度并居中 ── */
+div[data-testid="stChatInput"] {
+    max-width: 750px !important;   /* 调整这个数值(比如 700px 或 900px)来控制输入框的总长度 */
+    margin-left: auto !important;  /* 保证它在屏幕底部居中 */
+    margin-right: auto !important; /* 保证它在屏幕底部居中 */
+}
