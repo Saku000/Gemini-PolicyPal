@@ -7,9 +7,15 @@ html,body,[data-testid="stAppViewContainer"]{
 }
 [data-testid="stHeader"]{display:none}
 [data-testid="stSidebar"]{display:none}
-.block-container{padding:0 !important;max-width:100% !important}
+.block-container {
+    padding: 1rem 2rem !important;
+    max-width: 1100px !important;  /* 限制最大宽度，防止在大屏幕上无限拉伸 */
+    margin: 0 auto !important;     /* 保证容器在页面居中 */
+}
 section[data-testid="stMain"]>div{padding:0 !important}
-div[data-testid="stVerticalBlock"]{gap:0 !important}
+div[data-testid="stVerticalBlock"] {
+    gap: 1.2rem !important;
+}
 
 div[data-testid="stFileUploader"]>div{
   background:rgba(167,139,250,0.06) !important;
@@ -473,13 +479,14 @@ div[data-testid="stTextInput"] input{
 .gap-sm{height:12px}.gap-md{height:20px}.gap-lg{height:30px}
 
 /* ── NAV CONTAINER (wraps logo col + button cols) ── */
-[data-testid="stHorizontalBlock"]:first-of-type{
-  background:rgba(26,15,60,0.85) !important;
-  backdrop-filter:blur(16px) !important;
-  border-bottom:1px solid rgba(167,139,250,0.15) !important;
-  padding:8px 16px !important;
-  margin:0 !important;
-  gap:8px !important;
+div[data-testid="stMainBlockContainer"] > div[data-testid="stVerticalBlock"] > div:first-child [data-testid="stHorizontalBlock"] {
+    background: rgba(26,15,60,0.85) !important;
+    backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(167,139,250,0.15) !important;
+    border-radius: 16px !important; /* 增加圆角以适应限制宽度后的居中状态 */
+    padding: 8px 16px !important;
+    margin-bottom: 1.5rem !important;
+    gap: 8px !important;
 }
 .pp-logo{
   display:flex;align-items:center;gap:10px;
@@ -529,4 +536,51 @@ div[data-testid="stVerticalBlock"] > div:first-child{
 }
 [data-testid="block-container"], .stMainBlockContainer {
   padding-top: 1.5rem !important;
+}
+/* ── COMPARE READY PLACEHOLDER ── */
+.ready-placeholder {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    height: 100%;
+    min-height: 480px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    padding: 2rem;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.1);
+}
+.rp-glow {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%;
+    height: 120px;
+    background: radial-gradient(ellipse, rgba(167, 139, 250, 0.25) 0%, transparent 60%);
+    filter: blur(40px);
+    pointer-events: none;
+    z-index: 0;
+}
+.rp-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    z-index: 1;
+    opacity: 0.9;
+}
+.ready-placeholder h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #EEE8FF;
+    margin-bottom: 0.5rem;
+    z-index: 1;
+}
+.ready-placeholder p {
+    font-size: 0.9rem;
+    color: #7B6FA0;
+    z-index: 1;
 }

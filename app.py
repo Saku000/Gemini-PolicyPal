@@ -53,6 +53,7 @@ def _get_api_key():
 
 API_KEY = _get_api_key()
 
+
 # ── 2. BACKEND IMPORTS ────────────────────────────────────────────────────────
 import core
 from policy_paths import PROJECT_ROOT, POLICY_A_DIR, POLICY_B_DIR, COMPARE_DIR
@@ -173,17 +174,31 @@ def sparkle(): return '<svg width="12" height="12" viewBox="0 0 12 12" fill="non
 
 # ── 5. NAVIGATION ─────────────────────────────────────────────────────────────
 def render_nav():
-    logo_col, c1, c2, c3 = st.columns([1.2, 1, 1, 1])
-    with logo_col: st.markdown(f'<div class="pp-logo" style="height:44px;display:flex;align-items:center;gap:10px;padding-left:8px">{pal_svg(28)} PolicyPal</div>', unsafe_allow_html=True)
+    # 加入 spacer 占位列 (比重为 3)，把右侧的按钮推到角落，并缩小按钮宽度
+    logo_col, spacer, c1, c2, c3 = st.columns([1.5, 3, 1, 1, 1])
+
+    with logo_col:
+        st.markdown(
+            f'<div class="pp-logo" style="height:44px;display:flex;align-items:center;gap:10px;padding-left:8px">{pal_svg(28)} PolicyPal</div>',
+            unsafe_allow_html=True)
+    with spacer:
+        st.empty()  # 留空占位
+
     with c1:
-        if st.button("📊  Dashboard", key="n1", use_container_width=True, type="primary" if st.session_state.page == "dashboard" else "secondary"):
-            st.session_state.page = "dashboard"; st.rerun()
+        if st.button("📊  Dashboard", key="n1", use_container_width=True,
+                     type="primary" if st.session_state.page == "dashboard" else "secondary"):
+            st.session_state.page = "dashboard";
+            st.rerun()
     with c2:
-        if st.button("⚖️  Compare", key="n2", use_container_width=True, type="primary" if st.session_state.page == "compare" else "secondary"):
-            st.session_state.page = "compare"; st.rerun()
+        if st.button("⚖️  Compare", key="n2", use_container_width=True,
+                     type="primary" if st.session_state.page == "compare" else "secondary"):
+            st.session_state.page = "compare";
+            st.rerun()
     with c3:
-        if st.button("💬  Ask Pal", key="n3", use_container_width=True, type="primary" if st.session_state.page == "ask" else "secondary"):
-            st.session_state.page = "ask"; st.rerun()
+        if st.button("💬  Ask Pal", key="n3", use_container_width=True,
+                     type="primary" if st.session_state.page == "ask" else "secondary"):
+            st.session_state.page = "ask";
+            st.rerun()
 
 # ── 6. PAGES ──────────────────────────────────────────────────────────────────
 
@@ -257,35 +272,83 @@ def page_dashboard():
 def page_compare():
     st.markdown('<div class="pp-page"><div class="orb-tr"></div><div class="orb-bl"></div>', unsafe_allow_html=True)
     st.markdown('<div class="cmp-headline">Policy <span>Comparison</span></div>', unsafe_allow_html=True)
-    c_left, c_right = st.columns([1, 2], gap="large")
+    st.markdown('<div class="cmp-sub">Compare two insurance policies side-by-side with AI-powered insights</div>',
+                unsafe_allow_html=True)
+
+    # 调整比例，让右侧对比区域更宽敞
+    c_left, c_right = st.columns([1.2, 2.5], gap="large")
+
     with c_left:
-        st.markdown('<div class="cc">', unsafe_allow_html=True)
-        st.subheader("📁 Policy Folders")
-        ca, cb = st.columns(2)
-        with ca:
-            if st.button("📂 Open A", use_container_width=True): open_folder(POLICY_A_DIR)
-            na = st.text_input("Label A", value=st.session_state.cmp_name_a)
-        with cb:
-            if st.button("📂 Open B", use_container_width=True): open_folder(POLICY_B_DIR)
-            nb = st.text_input("Label B", value=st.session_state.cmp_name_b)
+        # 带有终端风格的路径显示框
+        st.markdown('''
+            <div style="background:rgba(0,0,0,0.25); border:1px solid rgba(167,139,250,0.2); border-radius:12px; padding:10px 14px; margin-bottom:1.5rem; display:flex; align-items:center; gap:8px; font-family:'Courier New', monospace; font-size:0.85rem; color:#A78BFA; box-shadow:inset 0 2px 4px rgba(0,0,0,0.2);">
+                <span style="color:#6B5F8A;">Reads from</span> data/qa_policies
+            </div>
+        ''', unsafe_allow_html=True)
+
+        # 左侧标题栏
+        st.markdown('''
+            <div style="display:flex; align-items:center; gap:10px; font-weight:700; color:#EEE8FF; margin-bottom:1.5rem;">
+                <div style="background:#7C3AED; border-radius:8px; width:28px; height:28px; display:flex; align-items:center; justify-content:center; font-size:14px;">📁</div>
+                Policy Folders
+            </div>
+        ''', unsafe_allow_html=True)
+
+        # Policy A 垂直组
+        st.markdown('<div style="font-size:0.85rem; font-weight:600; color:#EEE8FF; margin-bottom:8px;">Policy A</div>',
+                    unsafe_allow_html=True)
+        if st.button("📂 Open Folder A", key="op_a", use_container_width=True): open_folder(POLICY_A_DIR)
+        na = st.text_input("Label A", value=st.session_state.cmp_name_a, label_visibility="collapsed")
+
+        st.markdown('<div class="gap-md"></div>', unsafe_allow_html=True)
+
+        # Policy B 垂直组
+        st.markdown('<div style="font-size:0.85rem; font-weight:600; color:#EEE8FF; margin-bottom:8px;">Policy B</div>',
+                    unsafe_allow_html=True)
+        if st.button("📂 Open Folder B", key="op_b", use_container_width=True): open_folder(POLICY_B_DIR)
+        nb = st.text_input("Label B", value=st.session_state.cmp_name_b, label_visibility="collapsed")
+
+        st.markdown('<div class="gap-lg"></div>', unsafe_allow_html=True)
+
+        # 运行按钮
         if st.button("✨ Run Comparison", type="primary", use_container_width=True):
             with st.spinner("Analyzing..."):
                 idx_a = build_policy_index(str(POLICY_A_DIR), na, API_KEY, str(COMPARE_DIR))
                 idx_b = build_policy_index(str(POLICY_B_DIR), nb, API_KEY, str(COMPARE_DIR))
                 st.session_state.a_store, st.session_state.b_store = idx_a.store_path, idx_b.store_path
-                st.session_state.comparison = compare_policies_llm(build_policy_summary(na, idx_a.store_path, API_KEY), build_policy_summary(nb, idx_b.store_path, API_KEY), API_KEY)
+                st.session_state.comparison = compare_policies_llm(build_policy_summary(na, idx_a.store_path, API_KEY),
+                                                                   build_policy_summary(nb, idx_b.store_path, API_KEY),
+                                                                   API_KEY)
                 st.session_state.cmp_name_a, st.session_state.cmp_name_b = na, nb
             st.rerun()
+
         st.markdown('</div>', unsafe_allow_html=True)
+
     with c_right:
         cmp = st.session_state.comparison
         if cmp:
-            st.plotly_chart(build_radar_chart(cmp, st.session_state.cmp_name_a, st.session_state.cmp_name_b), use_container_width=True)
+            st.plotly_chart(build_radar_chart(cmp, st.session_state.cmp_name_a, st.session_state.cmp_name_b),
+                            use_container_width=True)
             q = st.text_area("Detailed Query", placeholder="Ask a cross-policy question...")
             if st.button("💬 Retrieve & Compare", type="primary"):
                 with st.spinner("Searching..."):
-                    st.session_state.compare_last_answer = compare_policies_prod(st.session_state.cmp_name_a, st.session_state.a_store, st.session_state.cmp_name_b, st.session_state.b_store, q, API_KEY)
-            if st.session_state.compare_last_answer: st.markdown(st.session_state.compare_last_answer, unsafe_allow_html=True)
+                    st.session_state.compare_last_answer = compare_policies_prod(st.session_state.cmp_name_a,
+                                                                                 st.session_state.a_store,
+                                                                                 st.session_state.cmp_name_b,
+                                                                                 st.session_state.b_store, q, API_KEY)
+            if st.session_state.compare_last_answer: st.markdown(st.session_state.compare_last_answer,
+                                                                 unsafe_allow_html=True)
+        else:
+            # 初始状态下的占位图
+            st.markdown('''
+            <div class="ready-placeholder">
+                <div class="rp-glow"></div>
+                <div class="rp-icon">✨</div>
+                <h3>Ready to Compare</h3>
+                <p>Select your policy folders and click "Run Comparison" to begin analysis</p>
+            </div>
+            ''', unsafe_allow_html=True)
+
     st.markdown("</div>", unsafe_allow_html=True)
 
 

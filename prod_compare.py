@@ -433,37 +433,11 @@ def compare_policies_prod(
         "5) Follow the OUTPUT FORMAT TEMPLATE exactly. Do not remove or reorder headings.\n"
         "6) Keep the direct answer to ONE paragraph.\n"
         "7) Key Differences must be exactly 3 bullets.\n"
-        "8) Who Should Choose section must be 2 bullets per policy.\n"
-        "9) Missing Info Checklist must mention missing coverage limits/deductibles/premium if missing.\n"
-        "10) Return the HTML table exactly as provided.\n"
+        "8) Missing Info Checklist must mention missing coverage limits/deductibles/premium if missing.\n"
+        "9) Return the HTML table exactly as provided.\n"
     )
 
-    output_format_template = f"""
-## Comparison Result
 
-{{DIRECT_ANSWER_ONE_PARAGRAPH}}
-
-### Here is a comparison of the available information:
-{table_html}
-
-## Key Differences
-- {{DIFF_1}}
-- {{DIFF_2}}
-- {{DIFF_3}}
-
-## Who Should Choose {policy_a_name} vs {policy_b_name}
-**Choose {policy_a_name} if:**
-- {{A_REASON_1}}
-- {{A_REASON_2}}
-
-**Choose {policy_b_name} if:**
-- {{B_REASON_1}}
-- {{B_REASON_2}}
-
-## Missing Info Checklist
-- {policy_a_name}: {{MISSING_A}}
-- {policy_b_name}: {{MISSING_B}}
-""".strip()
 
     user_obj = {
         "task": "compare_two_policies",
