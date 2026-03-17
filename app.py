@@ -295,7 +295,7 @@ def page_dashboard():
     with c1: st.markdown(f'<div class="stat-card sc-1"><div class="stat-label">Deductible</div><div class="stat-value">{an.get("deductible","—")}</div></div>', unsafe_allow_html=True)
     with c2: st.markdown(f'<div class="stat-card sc-2"><div class="stat-label">Premium</div><div class="stat-value">{an.get("monthly_premium") or an.get("annual_premium") or "—"}</div></div>', unsafe_allow_html=True)
     with c3: st.markdown(f'<div class="stat-card sc-3"><div class="stat-label">Out-of-Pocket</div><div class="stat-value">{an.get("out_of_pocket_max","—")}</div></div>', unsafe_allow_html=True)
-    with c4: st.markdown(f'<div class="stat-card sc-4"><div class="stat-label">Score</div><div class="stat-value">{an.get("risk_score",5)}/10</div></div>', unsafe_allow_html=True)
+    with c4: st.markdown(f'<div class="stat-card sc-4"><div class="stat-label">Risk Level</div><div class="stat-value">{an.get("risk_score",5)}/10</div></div>', unsafe_allow_html=True)
 
     st.markdown('<div class="gap-md"></div>', unsafe_allow_html=True)
 

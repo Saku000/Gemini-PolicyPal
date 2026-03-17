@@ -6,6 +6,7 @@ import json
 import io
 import pdfplumber
 from google import genai
+from google.genai import types  # <--- 确保加上这一行
 
 GEMINI_MODEL = "gemini-2.5-flash"
 
@@ -36,38 +37,48 @@ def analyze_policy_document(text: str, api_key: str) -> dict:
 
     prompt = f"""You are a licensed insurance advisor. Analyze this insurance policy and extract key information.
 
-Return ONLY a valid JSON object — no markdown fences, no preamble, no extra text.
+    Return ONLY a valid JSON object — no markdown fences, no preamble, no extra text.
 
-Schema:
-{{
-  "policy_type": "Health | Auto | Home | Life | Renters | Other",
-  "insurer": "Company name or Unknown",
-  "deductible": "e.g. $1,500 or Not found",
-  "annual_premium": "e.g. $2,400/yr or Not found",
-  "monthly_premium": "e.g. $200/mo or Not found",
-  "out_of_pocket_max": "e.g. $7,000 or Not found",
-  "coverage_limit": "e.g. $500,000 or Not found",
-  "coverage_areas": {{"AreaName": integer_percentage}},
-  "key_benefits": ["Up to 5 specific benefits"],
-  "exclusions": ["Up to 6 exclusions"],
-  "risk_flags": ["Up to 3 serious gaps"],
-  "risk_score": integer_1_to_10,
-  "risk_explanation": "1-2 sentences",
-  "plain_summary": "2-3 sentences plain English",
-  "who_its_good_for": "1 sentence",
-  "potential_savings": "Specific tip or None identified"
-}}
+    Schema:
+    {{
+      "policy_type": "Health | Auto | Home | Life | Renters | Other",
+      "insurer": "Company name or Unknown",
+      "deductible": "e.g. $1,500 or Not found",
+      "annual_premium": "e.g. $2,400/yr or Not found",
+      "monthly_premium": "e.g. $200/mo or Not found",
+      "out_of_pocket_max": "e.g. $7,000 or Not found",
+      "coverage_limit": "e.g. $500,000 or Not found",
+      "coverage_areas": {{"AreaName": integer_percentage}},
+      "key_benefits": ["Up to 5 specific benefits"],
+      "exclusions": ["Up to 6 exclusions"],
+      "risk_flags": ["Up to 3 serious gaps"],
+      "risk_score": integer_1_to_10,
+      "risk_explanation": "1-2 sentences",
+      "plain_summary": "2-3 sentences plain English",
+      "who_its_good_for": "1 sentence",
+      "potential_savings": "Specific tip or None identified"
+    }}
 
-Coverage areas must sum to 100.
-Risk: 1-3 excellent, 4-6 average, 7-10 high risk.
+    Coverage areas must sum to 100.
 
-POLICY TEXT:
-{text}"""
+    SCORING RUBRIC FOR 'risk_score' (1-10, where 10 is the BEST/SAFEST policy):
+    Start at a base score of 10, then strictly apply these deductions based on the text:
+    - Deduct 1 point if the deductible is unusually high or vaguely defined.
+    - Deduct 1 point if "out_of_pocket_max" is missing or very high.
+    - Deduct 2 points if there are 3 or more strict exclusions ("risk_flags").
+    - Deduct 1 point if coverage limits are ambiguous or "TBD".
+    (Minimum score is 1. If it's a solid, transparent policy, it should score 8-10).
+
+    POLICY TEXT:
+    {text}"""
 
     try:
         resp = client.models.generate_content(
             model=GEMINI_MODEL,
             contents=prompt,
+            config=types.GenerateContentConfig(
+                temperature=0.0,  # 强制设为 0，消除模型回答的随机性
+            )
         )
         raw = resp.text.strip()
         raw = raw.removeprefix("```json").removeprefix("```").removesuffix("```").strip()
