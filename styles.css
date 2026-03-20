@@ -84,10 +84,10 @@ div[data-testid="stChatInput"] textarea{color: var(--pp-text) !important}
 
 /* ── TEXT INPUT ── */
 div[data-testid="stTextInput"] input{
-  background-color: var(--pp-bg-soft) !important;
+
   border:1.5px solid rgba(167,139,250,0.3) !important;
   border-radius:12px !important;
-  color: var(--pp-text) !important;
+
 }
 div[data-testid="stTextInput"] input::placeholder{
   color: var(--pp-muted) !important;
@@ -675,3 +675,42 @@ div[data-testid="stChatInput"] {
     margin-right: auto !important;
 }
 
+/* ===== Force text inside Streamlit text input to be clearly visible ===== */
+div[data-testid="stTextInput"] input {
+  background: rgba(30, 41, 59, 0.88) !important;
+  color: #EEE8FF !important;
+  -webkit-text-fill-color: #EEE8FF !important;
+  caret-color: #EEE8FF !important;
+  opacity: 1 !important;
+}
+
+/* placeholder */
+div[data-testid="stTextInput"] input::placeholder {
+  color: rgba(238, 232, 255, 0.55) !important;
+  -webkit-text-fill-color: rgba(238, 232, 255, 0.55) !important;
+  opacity: 1 !important;
+}
+
+/* focus state */
+div[data-testid="stTextInput"] input:focus {
+  color: #EEE8FF !important;
+  -webkit-text-fill-color: #EEE8FF !important;
+  caret-color: #EEE8FF !important;
+  box-shadow: none !important;
+}
+
+/* autofill fix for Chrome */
+div[data-testid="stTextInput"] input:-webkit-autofill,
+div[data-testid="stTextInput"] input:-webkit-autofill:hover,
+div[data-testid="stTextInput"] input:-webkit-autofill:focus,
+div[data-testid="stTextInput"] input:-webkit-autofill:active {
+  -webkit-text-fill-color: #EEE8FF !important;
+  box-shadow: 0 0 0 1000px rgba(30, 41, 59, 0.88) inset !important;
+  transition: background-color 9999s ease-in-out 0s !important;
+}
+
+/* selected text */
+div[data-testid="stTextInput"] input::selection {
+  background: rgba(124, 58, 237, 0.45) !important;
+  color: #FFFFFF !important;
+}
