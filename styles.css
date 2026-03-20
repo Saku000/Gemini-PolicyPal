@@ -674,3 +674,59 @@ div[data-testid="stChatInput"] {
     margin-left: auto !important;
     margin-right: auto !important;
 }
+
+/* ── Fix visibility in light mode for uploader and inputs ── */
+
+/* File uploader outer area */
+div[data-testid="stFileUploader"] > div {
+  background: rgba(255,255,255,0.10) !important;
+  border: 1.5px dashed rgba(167,139,250,0.35) !important;
+}
+
+/* Drag and drop area text */
+div[data-testid="stFileUploader"] small,
+div[data-testid="stFileUploader"] span,
+div[data-testid="stFileUploader"] label,
+div[data-testid="stFileUploader"] p,
+div[data-testid="stFileUploader"] div {
+  color: #EEE8FF !important;
+}
+
+/* Specific uploader helper text */
+div[data-testid="stFileUploader"] section,
+div[data-testid="stFileUploader"] section * {
+  color: #EEE8FF !important;
+}
+
+/* Browse files button inside uploader */
+div[data-testid="stFileUploader"] button {
+  color: #C4B5FD !important;
+  border-color: rgba(167,139,250,0.45) !important;
+}
+
+/* Text input actual text */
+div[data-testid="stTextInput"] input {
+  color: #EEE8FF !important;
+  -webkit-text-fill-color: #EEE8FF !important;
+  background: rgba(255,255,255,0.10) !important;
+}
+
+/* Placeholder text */
+div[data-testid="stTextInput"] input::placeholder {
+  color: #CBBDEB !important;
+  opacity: 0.85 !important;
+}
+
+/* Input label */
+div[data-testid="stTextInput"] label,
+div[data-testid="stTextInput"] p,
+div[data-testid="stTextInput"] span,
+div[data-testid="stTextInput"] div {
+  color: #EEE8FF !important;
+}
+
+/* File uploader label text like “Upload PDF(s) for Policy A” */
+div[data-testid="stFileUploader"] + div,
+div[data-testid="stFileUploader"] ~ label {
+  color: #EEE8FF !important;
+}
