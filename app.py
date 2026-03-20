@@ -725,11 +725,9 @@ def page_ask():
     with head_col:
         st.markdown(
             '<div class="hero-h" style="font-size:2.5rem; margin-bottom:1rem;">Ask <span class="hero-grad">Pal</span></div>',
-            unsafe_allow_html=True,
+            unsafe_allow_html=True
         )
-    with btn_col:
-        if st.button("Show QA Folder Path", use_container_width=True):
-            open_folder(QA_PDF_DIR)
+
 
     if not st.session_state.policy_text:
         st.info("Please index your documents in the Dashboard first.")
