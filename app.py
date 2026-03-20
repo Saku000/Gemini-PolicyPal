@@ -107,6 +107,32 @@ for p in [QA_PDF_DIR, QA_CHUNKS_PATH.parent, POLICY_A_DIR, POLICY_B_DIR, COMPARE
     p.mkdir(parents=True, exist_ok=True)
 
 
+import tempfile
+
+def save_uploaded_files(uploaded_files, target_dir: pathlib.Path):
+    target_dir.mkdir(parents=True, exist_ok=True)
+
+    # 先清空旧文件，避免混淆
+    for old_file in target_dir.glob("*"):
+        if old_file.is_file():
+            old_file.unlink()
+
+    saved_paths = []
+    for uploaded_file in uploaded_files:
+        file_path = target_dir / uploaded_file.name
+        with open(file_path, "wb") as f:
+            f.write(uploaded_file.getbuffer())
+        saved_paths.append(file_path)
+
+    return saved_paths
+
+
+def clear_folder(folder: pathlib.Path):
+    folder.mkdir(parents=True, exist_ok=True)
+    for f in folder.glob("*"):
+        if f.is_file():
+            f.unlink()
+
 def safe_list_pdfs(folder: pathlib.Path):
     if not folder.exists() or not folder.is_dir():
         return []
@@ -357,23 +383,60 @@ def page_dashboard():
                     <div class="upload-zone-inner" style="flex-direction: column; justify-content: center; text-align: center; gap: 0.8rem; padding: 2.5rem 2rem;">
                         <div>{pal_svg(64)}</div>
                         <div class="upload-card-text">
-                            <h3 style="margin-bottom: 0.4rem;">Analyze Policy Folder</h3>
-                            <p>Reads from <code>data/qa_policies</code></p>
+                            <h3 style="margin-bottom: 0.4rem;">Upload Policy PDFs</h3>
+                            <p>You can upload one or multiple PDF files for analysis.</p>
                         </div>
                     </div>
                 </div>''',
                 unsafe_allow_html=True,
             )
 
+            uploaded_qa_files = st.file_uploader(
+                "Upload policy PDFs",
+                type=["pdf"],
+                accept_multiple_files=True,
+                key="qa_uploader"
+            )
+
+            if uploaded_qa_files:
+                st.success(f"{len(uploaded_qa_files)} file(s) ready for analysis.")
+                st.write("Uploaded files:", [f.name for f in uploaded_qa_files])
+
             c1, c2 = st.columns(2)
             with c1:
-                if st.button("Show QA Folder Path", use_container_width=True):
-                    open_folder(QA_PDF_DIR)
+                if st.button("Clear Uploaded QA Files", use_container_width=True):
+                    clear_folder(QA_PDF_DIR)
+                    st.session_state.analysis = None
+                    st.session_state.policy_text = None
+                    st.success("QA folder cleared.")
+                    st.rerun()
 
             start_analysis = False
             with c2:
                 if st.button("Analyze & Index", type="primary", use_container_width=True):
                     start_analysis = True
+
+            if start_analysis:
+                if not uploaded_qa_files:
+                    st.error("Please upload at least one PDF file.")
+                    st.stop()
+
+                save_uploaded_files(uploaded_qa_files, QA_PDF_DIR)
+
+                with st.spinner("Extracting & Indexing..."):
+                    try:
+                        text = extract_text_from_folder(str(QA_PDF_DIR))
+                        if not text:
+                            st.error("No readable text extracted from uploaded PDFs.")
+                            st.stop()
+
+                        st.session_state.policy_text = text
+                        st.session_state.analysis = analyze_policy_document(text, API_KEY)
+                        build_qa_index_from_folder(str(QA_PDF_DIR))
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"Failed to analyze and index documents: {e}")
+                        st.stop()
 
             qa_files = safe_list_pdfs(QA_PDF_DIR)
             if qa_files:
@@ -489,7 +552,7 @@ def page_compare():
         st.markdown(
             '''
             <div style="background:rgba(0,0,0,0.25); border:1px solid rgba(167,139,250,0.2); border-radius:12px; padding:10px 14px; margin-bottom:1.5rem; display:flex; align-items:center; gap:8px; font-family:'Courier New', monospace; font-size:0.85rem; color:#A78BFA; box-shadow:inset 0 2px 4px rgba(0,0,0,0.2);">
-                <span style="color:#6B5F8A;">Reads from</span> data/policy_a and data/policy_b
+                <span style="color:#6B5F8A;">Mode</span> Upload multiple PDFs for each policy
             </div>
             ''',
             unsafe_allow_html=True,
@@ -498,53 +561,88 @@ def page_compare():
         st.markdown(
             '''
             <div style="font-weight:700; color:#EEE8FF; margin-bottom:1.5rem; font-size:1.05rem;">
-                 Policy Folders
+                 Upload Policy Files
             </div>
             ''',
             unsafe_allow_html=True,
         )
 
+        # Policy A
         st.markdown(
             '<div style="font-size:0.85rem; font-weight:600; color:#EEE8FF; margin-bottom:8px;">Policy A</div>',
             unsafe_allow_html=True,
         )
-        if st.button("Show Folder A Path", key="op_a", use_container_width=True):
-            open_folder(POLICY_A_DIR)
-        na = st.text_input("Label A", value=st.session_state.cmp_name_a, label_visibility="collapsed")
+
+        uploaded_a_files = st.file_uploader(
+            "Upload PDF(s) for Policy A",
+            type=["pdf"],
+            accept_multiple_files=True,
+            key="policy_a_uploader",
+        )
+
+        na = st.text_input("Label A", value=st.session_state.cmp_name_a)
+
+        if uploaded_a_files:
+            st.caption(f"Policy A uploaded files: {len(uploaded_a_files)}")
+            st.write([f.name for f in uploaded_a_files])
 
         st.markdown('<div class="gap-md"></div>', unsafe_allow_html=True)
 
+        # Policy B
         st.markdown(
             '<div style="font-size:0.85rem; font-weight:600; color:#EEE8FF; margin-bottom:8px;">Policy B</div>',
             unsafe_allow_html=True,
         )
-        if st.button("Show Folder B Path", key="op_b", use_container_width=True):
-            open_folder(POLICY_B_DIR)
-        nb = st.text_input("Label B", value=st.session_state.cmp_name_b, label_visibility="collapsed")
 
-        files_a = safe_list_pdfs(POLICY_A_DIR)
-        files_b = safe_list_pdfs(POLICY_B_DIR)
+        uploaded_b_files = st.file_uploader(
+            "Upload PDF(s) for Policy B",
+            type=["pdf"],
+            accept_multiple_files=True,
+            key="policy_b_uploader",
+        )
 
-        st.caption(f"Policy A PDFs: {len(files_a)}")
-        st.caption(f"Policy B PDFs: {len(files_b)}")
+        nb = st.text_input("Label B", value=st.session_state.cmp_name_b)
+
+        if uploaded_b_files:
+            st.caption(f"Policy B uploaded files: {len(uploaded_b_files)}")
+            st.write([f.name for f in uploaded_b_files])
 
         st.markdown('<div class="gap-lg"></div>', unsafe_allow_html=True)
 
-        if st.button("Run Comparison", type="primary", use_container_width=True):
-            if not files_a:
-                st.error("No PDF files found in data/policy_a.")
+        c_btn1, c_btn2 = st.columns(2)
+
+        with c_btn1:
+            if st.button("Clear Policy Files", use_container_width=True):
+                clear_folder(POLICY_A_DIR)
+                clear_folder(POLICY_B_DIR)
+                st.session_state.comparison = None
+                st.session_state.compare_last_answer = ""
+                st.session_state.a_store = ""
+                st.session_state.b_store = ""
+                st.success("Uploaded policy files cleared.")
+                st.rerun()
+
+        with c_btn2:
+            run_compare = st.button("Run Comparison", type="primary", use_container_width=True)
+
+        if run_compare:
+            if not uploaded_a_files:
+                st.error("Please upload at least one PDF for Policy A.")
                 st.stop()
 
-            if not files_b:
-                st.error("No PDF files found in data/policy_b.")
+            if not uploaded_b_files:
+                st.error("Please upload at least one PDF for Policy B.")
                 st.stop()
+
+            save_uploaded_files(uploaded_a_files, POLICY_A_DIR)
+            save_uploaded_files(uploaded_b_files, POLICY_B_DIR)
 
             if not folder_has_text_pdf(POLICY_A_DIR):
-                st.error("Policy A PDFs were found, but no readable text could be extracted.")
+                st.error("Policy A PDFs were uploaded, but no readable text could be extracted.")
                 st.stop()
 
             if not folder_has_text_pdf(POLICY_B_DIR):
-                st.error("Policy B PDFs were found, but no readable text could be extracted.")
+                st.error("Policy B PDFs were uploaded, but no readable text could be extracted.")
                 st.stop()
 
             with st.spinner("Analyzing..."):
@@ -563,6 +661,7 @@ def page_compare():
 
                     st.session_state.cmp_name_a = na
                     st.session_state.cmp_name_b = nb
+                    st.session_state.compare_last_answer = ""
                 except Exception as e:
                     st.error(f"Comparison failed: {e}")
                     st.stop()
@@ -578,10 +677,14 @@ def page_compare():
                 build_radar_chart(cmp, st.session_state.cmp_name_a, st.session_state.cmp_name_b),
                 use_container_width=True,
             )
+
             q = st.text_area("Detailed Query", placeholder="Ask a cross-policy question...")
+
             if st.button("💬 Retrieve & Compare", type="primary"):
                 if not q.strip():
                     st.warning("Please enter a question.")
+                elif not st.session_state.a_store or not st.session_state.b_store:
+                    st.error("Please run comparison first.")
                 else:
                     with st.spinner("Searching..."):
                         try:
@@ -598,6 +701,7 @@ def page_compare():
 
             if st.session_state.compare_last_answer:
                 st.markdown(st.session_state.compare_last_answer, unsafe_allow_html=True)
+
         else:
             st.markdown(
                 '''
@@ -605,7 +709,7 @@ def page_compare():
                     <div class="rp-glow"></div>
                     <div class="rp-icon">✨</div>
                     <h3>Ready to Compare</h3>
-                    <p>Select your policy folders and click "Run Comparison" to begin analysis</p>
+                    <p>Upload PDF files for Policy A and Policy B, then click "Run Comparison".</p>
                 </div>
                 ''',
                 unsafe_allow_html=True,
