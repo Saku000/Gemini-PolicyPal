@@ -146,6 +146,7 @@ Main libraries:
 
 ## 📄 License
 
-Educational / Demo use.
+This project is licensed under the MIT License.  
+See the [LICENSE](./LICENSE) file for details.
 
 
