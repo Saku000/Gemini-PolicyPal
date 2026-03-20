@@ -1,5 +1,9 @@
 # 🛡️ PolicyPal – Insurance Policy RAG Assistant
 
+## 🚀 Live Demo
+
+🔗 https://gemini-policypal-35nyxxllhmj6k8djrgvxaw.streamlit.app/
+
 PolicyPal is an AI-powered Retrieval-Augmented Generation (RAG) system designed to analyze insurance policy documents and answer user questions with source-backed explanations.
 
 It supports:
@@ -12,9 +16,11 @@ It supports:
 - 📊 Structured policies comparison
 - 💬 Streamlit web interface
 
-## 🚀 Live Demo
+## ✅ Core Features
 
-🔗 https://gemini-policypal-35nyxxllhmj6k8djrgvxaw.streamlit.app/
+- Policy Analysis ✔
+- RAG Question Answering ✔
+- Policy Comparison ✔
 
 
 ---
