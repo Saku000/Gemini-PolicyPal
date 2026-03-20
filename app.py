@@ -605,7 +605,7 @@ def page_compare():
 
         if uploaded_b_files:
             st.caption(f"Policy B uploaded files: {len(uploaded_b_files)}")
-         
+
 
         st.markdown('<div class="gap-lg"></div>', unsafe_allow_html=True)
 
@@ -678,7 +678,7 @@ def page_compare():
                 use_container_width=True,
             )
 
-            q = st.text_area("Detailed Query", placeholder="Ask a cross-policy question...")
+            q = st.text_area("", placeholder="Ask a cross-policy question...")
 
             if st.button("💬 Retrieve & Compare", type="primary"):
                 if not q.strip():
