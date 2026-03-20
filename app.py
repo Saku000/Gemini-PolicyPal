@@ -400,7 +400,7 @@ def page_dashboard():
 
             if uploaded_qa_files:
                 st.success(f"{len(uploaded_qa_files)} file(s) ready for analysis.")
-                st.write("Uploaded files:", [f.name for f in uploaded_qa_files])
+                
 
             c1, c2 = st.columns(2)
             with c1:
