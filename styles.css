@@ -636,7 +636,7 @@ div[data-testid="stChatInput"] * {
     box-shadow: none !important;
 }
 
-/* 确保最外层胶囊本身保留效果 */
+
 div[data-testid="stChatInput"] {
     background: var(--pp-bg-soft) !important;
     border: 2px solid rgba(167, 139, 250, 0.3) !important;
@@ -644,12 +644,12 @@ div[data-testid="stChatInput"] {
     box-shadow: 0 10px 40px rgba(99, 102, 241, 0.2) !important;
 }
 
-/* 发送按钮悬浮特效 */
+
 div[data-testid="stChatInput"] button:hover svg {
     fill: #A78BFA !important;
 }
 
-/* ── 完美的 Q&A 胶囊输入框 ── */
+
 div[data-testid="stChatInput"] {
     padding: 10px 20px !important;
 }
@@ -668,7 +668,7 @@ div[data-testid="stChatInput"] button {
     padding-top: 0 !important;
 }
 
-/* ── 缩短 Q&A 底部输入框的左右长度并居中 ── */
+/* ──  Q&A bar ── */
 div[data-testid="stChatInput"] {
     max-width: 750px !important;
     margin-left: auto !important;
