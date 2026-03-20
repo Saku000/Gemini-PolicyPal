@@ -584,7 +584,7 @@ def page_compare():
 
         if uploaded_a_files:
             st.caption(f"Policy A uploaded files: {len(uploaded_a_files)}")
-            st.write([f.name for f in uploaded_a_files])
+
 
         st.markdown('<div class="gap-md"></div>', unsafe_allow_html=True)
 
@@ -605,7 +605,7 @@ def page_compare():
 
         if uploaded_b_files:
             st.caption(f"Policy B uploaded files: {len(uploaded_b_files)}")
-            st.write([f.name for f in uploaded_b_files])
+         
 
         st.markdown('<div class="gap-lg"></div>', unsafe_allow_html=True)
 
