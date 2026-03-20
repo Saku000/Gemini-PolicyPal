@@ -12,6 +12,10 @@ It supports:
 - 📊 Structured policies comparison
 - 💬 Streamlit web interface
 
+## 🚀 Live Demo
+
+🔗 https://gemini-policypal-35nyxxllhmj6k8djrgvxaw.streamlit.app/
+
 
 ---
 
