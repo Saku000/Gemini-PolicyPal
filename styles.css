@@ -1,18 +1,19 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --pp-text: var(--text-color);
-  --pp-bg-soft: color-mix(in srgb, var(--background-color) 82%, white 18%);
-  --pp-bg-soft-2: color-mix(in srgb, var(--background-color) 88%, white 12%);
-  --pp-border-soft: color-mix(in srgb, var(--text-color) 16%, transparent 84%);
-  --pp-muted: color-mix(in srgb, var(--text-color) 62%, transparent 38%);
-  --pp-muted-2: color-mix(in srgb, var(--text-color) 45%, transparent 55%);
+  --pp-text: #EEE8FF;
+  --pp-bg-soft: rgba(255,255,255,0.08);
+  --pp-bg-soft-2: rgba(255,255,255,0.06);
+  --pp-border-soft: rgba(255,255,255,0.14);
+  --pp-muted: #A89FCC;
+  --pp-muted-2: #7B6FA0;
 }
 
 html,body,[data-testid="stAppViewContainer"]{
   background: linear-gradient(135deg, #0B1521 0%, #1C4B62 80%, #307E92 100%) !important;
   background-attachment:fixed !important;
   font-family:'Plus Jakarta Sans',sans-serif !important;
+  color: var(--pp-text) !important;
 }
 
 [data-testid="stHeader"]{display:none}
@@ -28,9 +29,14 @@ div[data-testid="stVerticalBlock"] {
     gap: 1.2rem !important;
 }
 
+/* 全局文本固定颜色 */
+body, p, span, div, label, li, h1, h2, h3, h4, h5, h6 {
+  color: var(--pp-text);
+}
+
 /* ── FILE UPLOADER ── */
 div[data-testid="stFileUploader"]>div{
-  background: color-mix(in srgb, var(--background-color) 88%, white 12%) !important;
+  background: var(--pp-bg-soft-2) !important;
   border:2px dashed rgba(167,139,250,0.4) !important;
   border-radius:28px !important;padding:2rem !important;
   transition:all 0.3s !important;
@@ -39,9 +45,7 @@ div[data-testid="stFileUploader"]>div:hover{
   border-color:rgba(167,139,250,0.7) !important;
   box-shadow:0 20px 50px rgba(99,102,241,0.2) !important;
 }
-div[data-testid="stFileUploader"] label{
-  color: color-mix(in srgb, #C4B5FD 70%, var(--text-color) 30%) !important;
-}
+div[data-testid="stFileUploader"] label{color:#C4B5FD !important}
 
 /* ── BUTTONS ── */
 button[kind="primary"]{
@@ -57,16 +61,15 @@ button[kind="primary"]:hover{
   transform:translateY(-1px) scale(1.02) !important;
 }
 button[kind="secondary"]{
-  background: color-mix(in srgb, var(--background-color) 82%, white 18%) !important;
+  background:rgba(255,255,255,0.07) !important;
   border:2px solid rgba(167,139,250,0.4) !important;
-  border-radius:50px !important;
-  color: color-mix(in srgb, #C4B5FD 75%, var(--text-color) 25%) !important;
+  border-radius:50px !important;color:#C4B5FD !important;
   font-family:'Plus Jakarta Sans',sans-serif !important;font-weight:600 !important;
   transition:all 0.2s !important;
 }
 button[kind="secondary"]:hover{
   border-color:rgba(167,139,250,0.7) !important;
-  background: color-mix(in srgb, var(--background-color) 74%, white 26%) !important;
+  background:rgba(167,139,250,0.12) !important;
 }
 
 /* ── CHAT INPUT ── */
@@ -77,14 +80,14 @@ div[data-testid="stChatInput"]{
   box-shadow:0 10px 40px rgba(99,102,241,0.2) !important;
 }
 div[data-testid="stChatInput"]:hover{border-color:rgba(167,139,250,0.6) !important}
-div[data-testid="stChatInput"] textarea{color: var(--text-color) !important}
+div[data-testid="stChatInput"] textarea{color: var(--pp-text) !important}
 
 /* ── TEXT INPUT ── */
 div[data-testid="stTextInput"] input{
   background-color: var(--pp-bg-soft) !important;
   border:1.5px solid rgba(167,139,250,0.3) !important;
   border-radius:12px !important;
-  color: var(--text-color) !important;
+  color: var(--pp-text) !important;
 }
 div[data-testid="stTextInput"] input::placeholder{
   color: var(--pp-muted) !important;
@@ -93,7 +96,7 @@ div[data-testid="stTextInput"] input::placeholder{
 
 /* ── NAV ── */
 .pp-nav{
-  background: color-mix(in srgb, var(--background-color) 78%, white 22%);
+  background:rgba(26,15,60,0.85);
   backdrop-filter:blur(16px);
   -webkit-backdrop-filter:blur(16px);
   border-bottom:1px solid rgba(167,139,250,0.15);
@@ -103,7 +106,7 @@ div[data-testid="stTextInput"] input::placeholder{
 }
 .pp-logo{
   display:flex;align-items:center;gap:10px;
-  font-size:20px;font-weight:800;color: var(--text-color);
+  font-size:20px;font-weight:800;color: var(--pp-text);
   letter-spacing:-0.3px;
 }
 
@@ -132,7 +135,7 @@ div[data-testid="stTextInput"] input::placeholder{
 /* ── HERO ── */
 .hero-wrap{text-align:center;padding:1.2rem 1rem 1rem;position:relative;z-index:1}
 .hero-h{
-  font-size:3.8rem;font-weight:800;color: var(--text-color);
+  font-size:3.8rem;font-weight:800;color: var(--pp-text);
   line-height:1.05;margin-bottom:0.75rem;letter-spacing:-1.5px;
 }
 .hero-grad{
@@ -143,7 +146,7 @@ div[data-testid="stTextInput"] input::placeholder{
 
 /* ── UPLOAD CARD ── */
 .upload-card{
-  background: color-mix(in srgb, var(--background-color) 84%, white 16%);
+  background:rgba(255,255,255,0.05);
   border-radius:28px;padding:2.5rem 3rem;
   max-width:740px;margin:0 auto 2rem;
   border:2px solid rgba(167,139,250,0.2);
@@ -162,7 +165,7 @@ div[data-testid="stTextInput"] input::placeholder{
   pointer-events:none;
 }
 .upload-card-text h3{
-  font-size:1.6rem;font-weight:700;color: var(--text-color);margin-bottom:6px;
+  font-size:1.6rem;font-weight:700;color: var(--pp-text);margin-bottom:6px;
 }
 .upload-card-text p{font-size:0.92rem;color: var(--pp-muted);line-height:1.6}
 
@@ -172,10 +175,10 @@ div[data-testid="stTextInput"] input::placeholder{
   position:relative;z-index:1;
 }
 .chip{
-  background: color-mix(in srgb, var(--background-color) 84%, white 16%);
+  background:rgba(255,255,255,0.06);
   border:1.5px solid rgba(255,255,255,0.12);
   border-radius:50px;padding:8px 18px;
-  font-size:0.83rem;color: color-mix(in srgb, #C4B5FD 75%, var(--text-color) 25%);font-weight:500;
+  font-size:0.83rem;color:#C4B5FD;font-weight:500;
   display:flex;align-items:center;gap:7px;
   box-shadow:0 2px 8px rgba(0,0,0,0.1);
   transition:all 0.2s;
@@ -190,7 +193,7 @@ div[data-testid="stTextInput"] input::placeholder{
 
 /* ── POLICY BANNER ── */
 .policy-banner{
-  background: color-mix(in srgb, var(--background-color) 84%, white 16%);
+  background:rgba(255,255,255,0.05);
   border-radius:24px;padding:1.5rem 2rem;
   border:1px solid rgba(167,139,250,0.2);
   box-shadow:0 20px 40px rgba(0,0,0,0.15),inset 0 1px 0 rgba(255,255,255,0.06);
@@ -208,7 +211,7 @@ div[data-testid="stTextInput"] input::placeholder{
   font-size:0.75rem;font-weight:700;
   box-shadow:0 4px 12px rgba(16,185,129,0.4);white-space:nowrap;
 }
-.policy-name{font-size:1.5rem;font-weight:700;color: var(--text-color)}
+.policy-name{font-size:1.5rem;font-weight:700;color: var(--pp-text)}
 .policy-meta{font-size:0.84rem;color: var(--pp-muted);margin-top:3px}
 .policy-meta .active{color:#34D399;font-weight:600}
 .analysis-done{margin-left:auto;text-align:right}
@@ -246,18 +249,18 @@ div[data-testid="stTextInput"] input::placeholder{
 .st-warn{background:rgba(251,191,36,0.15);color:#FCD34D}
 .st-good{background:rgba(52,211,153,0.15);color:#6EE7B7}
 .stat-label{font-size:0.8rem;color: var(--pp-muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.5px}
-.stat-value{font-size:2rem;font-weight:800;color: var(--text-color);line-height:1}
+.stat-value{font-size:2rem;font-weight:800;color: var(--pp-text);line-height:1}
 
 /* ── CONTENT CARDS ── */
 .cc{
-  background: color-mix(in srgb, var(--background-color) 84%, white 16%);
+  background:rgba(255,255,255,0.05);
   border-radius:24px;padding:1.5rem 2rem;
   border:1px solid rgba(255,255,255,0.08);
   box-shadow:0 4px 20px rgba(0,0,0,0.1),inset 0 1px 0 rgba(255,255,255,0.04);
   height:100%;position:relative;z-index:1;
 }
 .cc-title{
-  font-size:1.1rem;font-weight:700;color: var(--text-color);
+  font-size:1.1rem;font-weight:700;color: var(--pp-text);
   margin-bottom:1.25rem;
   display:flex;align-items:center;gap:8px;
 }
@@ -268,7 +271,7 @@ div[data-testid="stTextInput"] input::placeholder{
 .cov-item{
   display:flex;align-items:flex-start;gap:10px;
   padding:10px 12px;border-radius:12px;
-  font-size:0.9rem;color: color-mix(in srgb, var(--text-color) 85%, #C4B5FD 15%);line-height:1.55;
+  font-size:0.9rem;color:#C4B5FD;line-height:1.55;
   transition:background 0.15s;
 }
 .cov-item:hover{background:rgba(16,185,129,0.08)}
@@ -296,9 +299,9 @@ div[data-testid="stTextInput"] input::placeholder{
   position:relative;z-index:1;
 }
 .sum-header{display:flex;align-items:center;gap:14px;margin-bottom:1.25rem}
-.sum-header h3{font-size:1.1rem;font-weight:700;color: var(--text-color)}
+.sum-header h3{font-size:1.1rem;font-weight:700;color: var(--pp-text)}
 .sum-header p{font-size:0.8rem;color: var(--pp-muted)}
-.sum-text{font-size:0.95rem;color: color-mix(in srgb, var(--text-color) 82%, #C4B5FD 18%);line-height:1.8;margin-bottom:1rem}
+.sum-text{font-size:0.95rem;color:#C4B5FD;line-height:1.8;margin-bottom:1rem}
 .sum-text .hi{color:#818CF8;font-weight:600}
 .sum-text .ho{color:#FB923C;font-weight:600}
 .ideal-for{border-top:1px solid rgba(167,139,250,0.2);padding-top:1rem;font-size:0.87rem;color: var(--pp-muted)}
@@ -307,7 +310,7 @@ div[data-testid="stTextInput"] input::placeholder{
 /* ── RISK FLAGS ── */
 .watch-h{
   display:flex;align-items:center;gap:10px;
-  font-size:1.05rem;font-weight:700;color: var(--text-color);margin-bottom:1rem;
+  font-size:1.05rem;font-weight:700;color: var(--pp-text);margin-bottom:1rem;
 }
 .flag-card{
   background:rgba(249,115,22,0.08);
@@ -334,7 +337,7 @@ div[data-testid="stTextInput"] input::placeholder{
 /* ── COMPARE ── */
 .cmp-headline{
   text-align:center;
-  font-size:3rem;font-weight:800;color: var(--text-color);
+  font-size:3rem;font-weight:800;color: var(--pp-text);
   margin-bottom:6px;letter-spacing:-1px;
 }
 .cmp-headline span{
@@ -370,7 +373,7 @@ div[data-testid="stTextInput"] input::placeholder{
   border:1px solid rgba(56,189,248,0.3);
   display:inline-block;margin-bottom:10px;
 }
-.pod-name{font-size:1.1rem;font-weight:700;color: var(--text-color);margin-bottom:5px}
+.pod-name{font-size:1.1rem;font-weight:700;color: var(--pp-text);margin-bottom:5px}
 .pod-score{font-size:3.5rem;font-weight:800;line-height:1}
 .pod-score-a{
   background:linear-gradient(135deg,#818CF8,#A78BFA);
@@ -390,15 +393,15 @@ div[data-testid="stTextInput"] input::placeholder{
 }
 .vs-inner{
   width:100%;height:100%;border-radius:50%;
-  background: color-mix(in srgb, var(--background-color) 82%, white 18%);
+  background:rgba(26,15,60,0.9);
   display:flex;align-items:center;justify-content:center;
-  font-size:1.1rem;font-weight:800;color: var(--text-color);
+  font-size:1.1rem;font-weight:800;color: var(--pp-text);
 }
 
 /* DIM COMPARISON BARS */
 .dim-block{margin-bottom:1.5rem}
 .dim-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.dim-name{font-size:0.9rem;font-weight:600;color: var(--text-color)}
+.dim-name{font-size:0.9rem;font-weight:600;color: var(--pp-text)}
 .win-tag-a{background:rgba(129,140,248,0.18);color:#A5B4FC;border-radius:50px;padding:3px 12px;font-size:0.72rem;font-weight:700}
 .win-tag-b{background:rgba(56,189,248,0.18);color:#7DD3FC;border-radius:50px;padding:3px 12px;font-size:0.72rem;font-weight:700}
 .win-tag-tie{background:rgba(255,255,255,0.08);color: var(--pp-muted-2);border-radius:50px;padding:3px 12px;font-size:0.72rem;font-weight:700}
@@ -419,7 +422,7 @@ div[data-testid="stTextInput"] input::placeholder{
   transition:all 0.2s;
 }
 .bf-card:hover{border-color:rgba(167,139,250,0.4);box-shadow:0 4px 15px rgba(99,102,241,0.15)}
-.bf-label{font-size:0.9rem;color: color-mix(in srgb, var(--text-color) 82%, #C4B5FD 18%);font-weight:500;display:flex;align-items:center;gap:8px}
+.bf-label{font-size:0.9rem;color:#C4B5FD;font-weight:500;display:flex;align-items:center;gap:8px}
 .bf-win-a{font-size:0.9rem;font-weight:700;color:#A78BFA}
 .bf-win-b{font-size:0.9rem;font-weight:700;color:#38BDF8}
 
@@ -430,8 +433,8 @@ div[data-testid="stTextInput"] input::placeholder{
   border:2px solid rgba(167,139,250,0.3);
   box-shadow:0 10px 40px rgba(0,0,0,0.15);
 }
-.pal-rec h3{font-size:1.3rem;font-weight:700;color: var(--text-color);margin-bottom:10px}
-.pal-rec p{font-size:0.95rem;color: color-mix(in srgb, var(--text-color) 84%, #C4B5FD 16%);line-height:1.75}
+.pal-rec h3{font-size:1.3rem;font-weight:700;color: var(--pp-text);margin-bottom:10px}
+.pal-rec p{font-size:0.95rem;color:#C4B5FD;line-height:1.75}
 .pal-rec .hi{color:#818CF8;font-weight:700}
 .rec-badge{
   display:inline-flex;align-items:center;gap:6px;
@@ -443,8 +446,7 @@ div[data-testid="stTextInput"] input::placeholder{
 
 /* ── CHAT ── */
 .ask-banner{
-  background: color-mix(in srgb, var(--background-color) 84%, white 16%);
-  border-radius:16px;
+  background:rgba(255,255,255,0.05);border-radius:16px;
   padding:1rem 1.25rem;
   border:1px solid rgba(167,139,250,0.2);
   box-shadow:0 4px 20px rgba(0,0,0,0.1);
@@ -452,14 +454,14 @@ div[data-testid="stTextInput"] input::placeholder{
   margin-bottom:1.25rem;font-size:0.9rem;color: var(--pp-muted);
   position:relative;z-index:1;
 }
-.ask-banner strong{color: var(--text-color)}
+.ask-banner strong{color: var(--pp-text)}
 .ask-badge{background:rgba(167,139,250,0.18);color:#A78BFA;border-radius:50px;padding:3px 12px;font-size:0.76rem;font-weight:600}
 .bubble-pal{
-  background: color-mix(in srgb, var(--background-color) 84%, white 16%);
+  background:rgba(255,255,255,0.07);
   border:1px solid rgba(255,255,255,0.1);
   border-radius:4px 20px 20px 20px;
   padding:1rem 1.25rem;
-  font-size:0.9rem;color: var(--text-color);line-height:1.7;max-width:82%;
+  font-size:0.9rem;color: var(--pp-text);line-height:1.7;max-width:82%;
   box-shadow:0 4px 20px rgba(0,0,0,0.1);
 }
 .bubble-pal .bold-ans{color:#818CF8;font-weight:700}
@@ -477,7 +479,7 @@ div[data-testid="stTextInput"] input::placeholder{
   padding:4px 12px;font-size:0.74rem;font-weight:600;margin-top:8px;
 }
 .typing-bubble{
-  background: color-mix(in srgb, var(--background-color) 84%, white 16%);
+  background:rgba(255,255,255,0.07);
   border:1px solid rgba(255,255,255,0.1);
   border-radius:4px 20px 20px 20px;
   padding:1rem 1.25rem;
@@ -498,13 +500,13 @@ div[data-testid="stTextInput"] input::placeholder{
   flex-shrink:0;box-shadow:0 4px 12px rgba(79,70,229,0.4);
 }
 .no-policy{text-align:center;padding:5rem 2rem;position:relative;z-index:1}
-.no-policy h3{font-size:1.25rem;font-weight:700;color: var(--text-color);margin-bottom:6px}
+.no-policy h3{font-size:1.25rem;font-weight:700;color: var(--pp-text);margin-bottom:6px}
 .no-policy p{font-size:0.9rem;color: var(--pp-muted)}
 .gap-sm{height:12px}.gap-md{height:20px}.gap-lg{height:30px}
 
 /* ── NAV CONTAINER ── */
 div[data-testid="stMainBlockContainer"] > div[data-testid="stVerticalBlock"] > div:first-child [data-testid="stHorizontalBlock"] {
-    background: color-mix(in srgb, var(--background-color) 78%, white 22%) !important;
+    background: rgba(26,15,60,0.85) !important;
     backdrop-filter: blur(16px) !important;
     border: 1px solid rgba(167,139,250,0.15) !important;
     border-radius: 16px !important;
@@ -514,13 +516,13 @@ div[data-testid="stMainBlockContainer"] > div[data-testid="stVerticalBlock"] > d
 }
 .pp-logo{
   display:flex;align-items:center;gap:10px;
-  font-size:19px;font-weight:800;color: var(--text-color);
+  font-size:19px;font-weight:800;color: var(--pp-text);
   letter-spacing:-0.3px;white-space:nowrap;
 }
 
 /* ── UPLOAD ZONE ── */
 .upload-zone-wrapper{
-  background: color-mix(in srgb, var(--background-color) 84%, white 16%);
+  background:rgba(255,255,255,0.05);
   border-radius:28px;
   border:2px solid rgba(167,139,250,0.2);
   box-shadow:0 20px 50px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.05);
@@ -543,7 +545,7 @@ div[data-testid="stFileUploader"]{
   margin-top:0 !important;
 }
 div[data-testid="stFileUploader"]>div{
-  background: color-mix(in srgb, var(--background-color) 88%, white 12%) !important;
+  background:rgba(167,139,250,0.04) !important;
   border:1.5px dashed rgba(167,139,250,0.35) !important;
   border-radius:0 0 28px 28px !important;
   border-top:1px solid rgba(167,139,250,0.15) !important;
@@ -564,7 +566,7 @@ div[data-testid="stVerticalBlock"] > div:first-child{
 
 /* ── COMPARE READY PLACEHOLDER ── */
 .ready-placeholder {
-    background: color-mix(in srgb, var(--background-color) 90%, white 10%);
+    background: rgba(255, 255, 255, 0.02);
     border-radius: 24px;
     border: 1px solid rgba(255, 255, 255, 0.04);
     height: 100%;
@@ -600,7 +602,7 @@ div[data-testid="stVerticalBlock"] > div:first-child{
 .ready-placeholder h3 {
     font-size: 1.4rem;
     font-weight: 700;
-    color: var(--text-color);
+    color: var(--pp-text);
     margin-bottom: 0.5rem;
     z-index: 1;
 }
@@ -634,7 +636,7 @@ div[data-testid="stChatInput"] * {
     box-shadow: none !important;
 }
 
-/* restore outer chat shell */
+/* 确保最外层胶囊本身保留效果 */
 div[data-testid="stChatInput"] {
     background: var(--pp-bg-soft) !important;
     border: 2px solid rgba(167, 139, 250, 0.3) !important;
@@ -642,12 +644,12 @@ div[data-testid="stChatInput"] {
     box-shadow: 0 10px 40px rgba(99, 102, 241, 0.2) !important;
 }
 
-/* send button hover */
+/* 发送按钮悬浮特效 */
 div[data-testid="stChatInput"] button:hover svg {
     fill: #A78BFA !important;
 }
 
-/* ── better Q&A capsule ── */
+/* ── 完美的 Q&A 胶囊输入框 ── */
 div[data-testid="stChatInput"] {
     padding: 10px 20px !important;
 }
@@ -666,7 +668,7 @@ div[data-testid="stChatInput"] button {
     padding-top: 0 !important;
 }
 
-/* ── shorten bottom chat input ── */
+/* ── 缩短 Q&A 底部输入框的左右长度并居中 ── */
 div[data-testid="stChatInput"] {
     max-width: 750px !important;
     margin-left: auto !important;
