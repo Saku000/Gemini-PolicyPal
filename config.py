@@ -5,18 +5,18 @@
 
 # ========= Step 3: Parsing & Chunking =========
 
-# 输入PDF目录
+
 INPUT_PDF_DIR = "data/sample_policies"
 
-# Step 3 输出 JSON
+
 OUTPUT_CHUNKS_PATH = "storage/parsed_chunks.json"
 
 # Token-based chunking
-TOKEN_CHUNK_SIZE = 800          # 每块 800 tokens
-TOKEN_CHUNK_OVERLAP = 100       # 重叠 100 tokens
+TOKEN_CHUNK_SIZE = 800        
+TOKEN_CHUNK_OVERLAP = 100
 TOKEN_ENCODING_NAME = "cl100k_base"
 
-# 过滤过短 chunk（字符数）
+# 
 MIN_CHUNK_CHARS = 300
 
 
@@ -36,9 +36,9 @@ RETRIEVAL_TOP_K = 3
 # You can swap to "gemini-2.5-flash" if you want stronger quality (usually higher cost/latency).
 CHAT_MODEL = "gemini-2.5-flash"
 
-MAX_CONTEXT_CHARS = 12000   # 控制塞进prompt的上下文长度（简单按字符截断）
+MAX_CONTEXT_CHARS = 12000   
 RAG_TOP_K = 3
-RAG_DISTANCE_THRESHOLD = 1.2  # 距离越小越相似
+RAG_DISTANCE_THRESHOLD = 1.2  
 
 
 # ===== Step 6: Intent Classification (Gemini) =====
